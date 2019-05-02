@@ -21,12 +21,12 @@ import java.util.List;
 public class ProfileWatcher extends BaseTask {
 
 
-    private int testCount = 0;
+    private int testCount = 101;
 
     private static final int TEN_SECOND = 1000 * 10;
     private static String LAST_APP;
     // default 5s per, check one round resource
-    private int interval = 1000 * 1;
+    private int interval = 1000 * 5;
     private Handler handler;
     private Context context;
     private IntentFilter ifilter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
@@ -54,6 +54,9 @@ public class ProfileWatcher extends BaseTask {
      * @return
      */
     public static String getScreenAc(Context context) {
+        if (context == null) {
+            return "";
+        }
         UsageStatsManager usageStatsManager = (UsageStatsManager) context.getSystemService(Context.USAGE_STATS_SERVICE);
         long time = System.currentTimeMillis();
         List<UsageStats> queryUsageStats = usageStatsManager.queryUsageStats(UsageStatsManager.INTERVAL_DAILY, time - TEN_SECOND, time);
@@ -62,7 +65,7 @@ public class ProfileWatcher extends BaseTask {
         }
 
         long end = System.currentTimeMillis();
-        log.d("[Get recent app usage list] size : " + queryUsageStats.size() + " cost time: " + (end - time));
+//        log.d("[Get recent app usage list] size : " + queryUsageStats.size() + " cost time: " + (end - time));
         UsageStats lastApp = null;
         for (UsageStats usageStats : queryUsageStats) {
             if (lastApp == null ||
@@ -94,7 +97,7 @@ public class ProfileWatcher extends BaseTask {
         long max = rt.maxMemory();
         long end = System.currentTimeMillis();
 
-        log.d("[getMemoryInfo: time use]" + (end - time));
+//        log.d("[getMemoryInfo: time use]" + (end - time));
         return String.format("total: %s, vmAlloc: %s, nativeHeap: %s, nativeAlloc: %s, max: %s", formatMemoeryText(total),
                 formatMemoeryText(vmAlloc), formatMemoeryText(nativeHeap), formatMemoeryText(nativeAlloc), formatMemoeryText(max));
     }
@@ -142,7 +145,7 @@ public class ProfileWatcher extends BaseTask {
             int scale = batteryStatus.getIntExtra(BatteryManager.EXTRA_SCALE, -1);
             float batteryPct = level / (float) scale;
             long end = System.currentTimeMillis();
-            log.d("[getBattery: time use ]" + (end - time));
+//            log.d("[getBattery: time use ]" + (end - time));
             return "isCharging: " + isCharging + " battery: " + batteryPct + " level: " + level + " scale: " + scale;
         }
         return "";
@@ -157,7 +160,7 @@ public class ProfileWatcher extends BaseTask {
                     "-[Memory: ] " + getMemoryInfo() + "\n" +
                     "-[Battery: ] " + getBattery(context, ifilter) + "\n" +
                     "-[Count: ] " + testCount;
-            log.d(out);
+//            log.d(out);
             if (handler != null) {
                 Message msg = new Message();
                 msg.what = GattServerActivity.LOG_PROFILE;
